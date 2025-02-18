@@ -1,0 +1,22 @@
+### get all authors
+GET {{baseUrl}}/authors
+Accept: application/json
+
+### create author
+POST {{baseUrl}}/authors
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "Kenneth",
+  "lastName": "Parcell"
+}
+
+> {% client.global.set("author_id", response.body.id) %}
+
+### get author
+GET {{baseUrl}}/authors/{{author_id}}
+Accept: application/json
+
+### delete author
+DELETE {{baseUrl}}/authors/{{author_id}}
