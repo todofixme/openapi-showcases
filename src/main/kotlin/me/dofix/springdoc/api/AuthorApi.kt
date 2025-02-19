@@ -41,7 +41,7 @@ interface AuthorApi {
             ApiResponse(
                 description = "invalid input",
                 responseCode = "400",
-                content = [Content(schema = Schema(implementation = ProblemDTO::class))]
+                content = [Content(schema = Schema(implementation = Problem400BadRequestDTO::class))]
             ),
         ]
     )
