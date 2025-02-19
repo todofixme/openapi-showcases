@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.xml.bind.annotation.XmlAccessType
 import jakarta.xml.bind.annotation.XmlAccessorType
 import jakarta.xml.bind.annotation.XmlRootElement
+import me.dofix.springdoc.persistence.Author
 import java.util.UUID
 
 @JacksonXmlRootElement(localName = "author")
@@ -35,3 +36,5 @@ class AuthorDTO(
     @Schema(example = "Doe", description = "The last name of the author.")
     fun getLastName() = lastName
 }
+
+fun authorToDto(author: Author) = AuthorDTO(author.id, author.firstName, author.lastName)

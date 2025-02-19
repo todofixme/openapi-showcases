@@ -9,18 +9,17 @@ import java.util.UUID
 @RestController
 class AuthorController(
     val service: AuthorService,
-    val mapper: AuthorMapper,
 ) : AuthorApi {
     override fun createAuthor(author: CreateAuthorDTO): ResponseEntity<AuthorDTO> {
-        val authorItem = service.save(mapper.fromDTO(author))
-        return ResponseEntity.created(URI.create("/${authorItem.id}")).body(mapper.toDTO(authorItem))
+        val authorItem = service.save(author.toAuthor())
+        return ResponseEntity.created(URI.create("/${authorItem.id}")).body(authorToDto(authorItem))
     }
 
     override fun getAllAuthors(): ResponseEntity<List<AuthorDTO>> =
-        ResponseEntity.ok(service.list().map { mapper.toDTO(it) })
+        ResponseEntity.ok(service.list().map { authorToDto(it) })
 
     override fun getAuthorById(authorId: UUID): ResponseEntity<AuthorDTO> =
-        ResponseEntity.ok(mapper.toDTO(service.get(authorId)))
+        ResponseEntity.ok(authorToDto(service.get(authorId)))
 
     override fun deleteAuthor(authorId: UUID): ResponseEntity<Void> {
         service.delete(authorId)
