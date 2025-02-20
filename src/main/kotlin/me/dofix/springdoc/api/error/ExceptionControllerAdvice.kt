@@ -1,11 +1,13 @@
-package me.dofix.springdoc.api
+package me.dofix.springdoc.api.error
 
 import me.dofix.springdoc.persistence.NotFoundException
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -21,6 +23,12 @@ class ExceptionControllerAdvice {
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<ProblemDTO> {
         val problem: ProblemDTO = createProblem(BAD_REQUEST, ex)
+        return ResponseEntity.status(problem.status).body(problem)
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun handleHttpRequestMethodNotSupportedException(ex: HttpRequestMethodNotSupportedException): ResponseEntity<ProblemDTO> {
+        val problem: ProblemDTO = createProblem(METHOD_NOT_ALLOWED, ex)
         return ResponseEntity.status(problem.status).body(problem)
     }
 

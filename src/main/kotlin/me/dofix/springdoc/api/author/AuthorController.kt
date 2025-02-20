@@ -1,4 +1,4 @@
-package me.dofix.springdoc.api
+package me.dofix.springdoc.api.author
 
 import me.dofix.springdoc.persistence.AuthorService
 import org.springframework.http.ResponseEntity
@@ -13,6 +13,14 @@ class AuthorController(
     override fun createAuthor(author: CreateAuthorDTO): ResponseEntity<AuthorDTO> {
         val authorItem = service.save(author.toAuthor())
         return ResponseEntity.created(URI.create("/${authorItem.id}")).body(authorToDto(authorItem))
+    }
+
+    override fun updateAuthor(
+        authorId: UUID,
+        author: CreateAuthorDTO,
+    ): ResponseEntity<AuthorDTO> {
+        service.save(author.toAuthor(authorId))
+        return ResponseEntity.noContent().build()
     }
 
     override fun getAllAuthors(): ResponseEntity<List<AuthorDTO>> =

@@ -1,4 +1,4 @@
-package me.dofix.springdoc.api
+package me.dofix.springdoc.api.error
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
@@ -10,19 +10,19 @@ import jakarta.xml.bind.annotation.XmlRootElement
 @JacksonXmlRootElement(localName = "Problem400BadRequest")
 @XmlRootElement(name = "Problem400BadRequest")
 @Schema(
-    name = "Problem400BadRequest",
-    description = "The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax). Problem object is based on RFC 7807 (Problem Details for HTTP APIs).",
+    name = "Problem404NotFound",
+    description = "The origin server did not find a current representation for the target resource. Problem object is based on RFC 7807 (Problem Details for HTTP APIs).",
     externalDocs = ExternalDocumentation(
-        url = "https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request",
-        description = "RFC 9110, 400 Bad Request"
+        url = "https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found",
+        description = "RFC 9110, 404 Bad Request"
     )
 )
-data class Problem400BadRequestDTO(
+data class Problem404NotFoundDTO(
 
     @JsonProperty("type")
     @JacksonXmlProperty(localName = "type")
     @Schema(
-        example = "https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request",
+        example = "https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found",
         description = "Type of problem with URI reference"
     )
     override val type: String,
@@ -30,7 +30,7 @@ data class Problem400BadRequestDTO(
     @JsonProperty("title")
     @JacksonXmlProperty(localName = "title")
     @Schema(
-        example = "Bad Request",
+        example = "Not Found",
         description = "Error class"
     )
     override val title: String,
@@ -38,7 +38,7 @@ data class Problem400BadRequestDTO(
     @JsonProperty("status")
     @JacksonXmlProperty(localName = "status")
     @Schema(
-        example = "400",
+        example = "404",
         description = "HTTP status code"
     )
     override val status: Int,
@@ -46,7 +46,7 @@ data class Problem400BadRequestDTO(
     @JsonProperty("detail")
     @JacksonXmlProperty(localName = "detail")
     @Schema(
-        example = "Invalid request",
+        example = "Item not found",
         description = "Failure message."
     )
     override val detail: String?

@@ -18,5 +18,15 @@ Content-Type: application/json
 GET {{baseUrl}}/authors/{{author_id}}
 Accept: application/json
 
+### update author
+PUT {{baseUrl}}/authors/{{author_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "Jack",
+  "lastName": "Donaghy"
+}
+
 ### delete author
 DELETE {{baseUrl}}/authors/{{author_id}}

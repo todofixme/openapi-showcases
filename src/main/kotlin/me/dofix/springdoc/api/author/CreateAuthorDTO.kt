@@ -1,4 +1,4 @@
-package me.dofix.springdoc.api
+package me.dofix.springdoc.api.author
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
@@ -13,19 +13,10 @@ import java.util.UUID
 @JacksonXmlRootElement(localName = "author")
 @XmlRootElement(name = "author")
 @XmlAccessorType(XmlAccessType.FIELD)
-class AuthorDTO(
-    private val id: UUID,
+class CreateAuthorDTO(
     private val firstName: String,
     private val lastName: String,
 ) {
-    @JsonProperty("id")
-    @JacksonXmlProperty(localName = "id")
-    @Schema(
-        example = "4a556026-4bbc-417c-b91e-52a2908cf8e5",
-        description = "A Universally Unique Identifier (UUID) to uniquely identify an author."
-    )
-    fun getId() = id
-
     @JsonProperty("firstName")
     @JacksonXmlProperty(localName = "firstName")
     @Schema(example = "John", description = "The first name of the author.")
@@ -35,6 +26,7 @@ class AuthorDTO(
     @JacksonXmlProperty(localName = "lastName")
     @Schema(example = "Doe", description = "The last name of the author.")
     fun getLastName() = lastName
-}
 
-fun authorToDto(author: Author) = AuthorDTO(author.id, author.firstName, author.lastName)
+    fun toAuthor() = Author(firstName = firstName, lastName = lastName)
+    fun toAuthor(id: UUID) = Author(id = id, firstName = firstName, lastName = lastName)
+}

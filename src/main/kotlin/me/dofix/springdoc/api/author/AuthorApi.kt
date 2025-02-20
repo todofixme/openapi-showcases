@@ -1,4 +1,4 @@
-package me.dofix.springdoc.api
+package me.dofix.springdoc.api.author
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import me.dofix.springdoc.api.error.Problem400BadRequestDTO
+import me.dofix.springdoc.api.error.Problem404NotFoundDTO
 import me.dofix.springdoc.persistence.Author
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import java.util.UUID
 
@@ -57,6 +60,36 @@ interface AuthorApi {
     }
 
     @Operation(
+        summary = "Update author.",
+        description = "Updates an already existing author in the database.",
+        tags = ["author"]
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                description = "successful operation",
+                responseCode = "204",
+            ),
+            ApiResponse(
+                description = "invalid input",
+                responseCode = "400",
+                content = [Content(schema = Schema(implementation = Problem400BadRequestDTO::class))]
+            ),
+        ]
+    )
+    @PutMapping(
+        value = ["/authors/{authorId}"],
+        consumes = ["application/xml", "application/json"],
+        produces = ["application/xml", "application/json"],
+    )
+    fun updateAuthor(
+        @PathVariable("authorId") authorId: UUID,
+        @Parameter(description = "Updated author object") @RequestBody author: @Valid CreateAuthorDTO
+    ): ResponseEntity<AuthorDTO> {
+        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+    }
+
+    @Operation(
         summary = "Get all authors.",
         description = "Returns all authors currently stored in the database.",
         tags = ["author"]
@@ -91,12 +124,12 @@ interface AuthorApi {
             ApiResponse(
                 responseCode = "400",
                 description = "Invalid ID supplied",
-                content = [Content(schema = Schema(implementation = ProblemDTO::class))]
+                content = [Content(schema = Schema(implementation = Problem400BadRequestDTO::class))]
             ),
             ApiResponse(
                 responseCode = "404",
                 description = "Author not found",
-                content = [Content(schema = Schema(implementation = ProblemDTO::class))]
+                content = [Content(schema = Schema(implementation = Problem404NotFoundDTO::class))]
             )]
     )
     @GetMapping(value = ["/authors/{authorId}"], produces = ["application/xml", "application/json"])
@@ -120,6 +153,7 @@ interface AuthorApi {
             ApiResponse(
                 responseCode = "400",
                 description = "Invalid ID supplied",
+                content = [Content(schema = Schema(implementation = Problem400BadRequestDTO::class))]
             )
         ]
     )
