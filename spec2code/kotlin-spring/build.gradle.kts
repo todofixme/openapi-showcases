@@ -1,4 +1,6 @@
+import com.github.gradle.node.npm.task.NpxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     val kotlinVersion = "2.1.10"
@@ -9,6 +11,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
 
     id("org.openapi.generator") version "7.11.0"
+    id("com.github.node-gradle.node") version "7.1.0"
 
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
@@ -42,9 +45,28 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+tasks.register<NpxTask>("lintApiSpec") {
+    command = "@redocly/cli"
+    args = listOf("lint", "./src/main/spec/api-spec.yaml")
+}
+
+tasks.register<NpxTask>("buildApiDocs") {
+    dependsOn("lintApiSpec")
+
+    command = "@redocly/cli"
+    args =
+        listOf(
+            "build-docs",
+            "./src/main/spec/api-spec.yaml",
+            "-o",
+            "${layout.buildDirectory.get()}/docs/api-spec.html",
+        )
+}
+
 val generatedOpenApiSourcesDir = "${layout.buildDirectory.get()}/generated-openapi"
 
-openApiGenerate {
+tasks.named<GenerateTask>("openApiGenerate") {
+    dependsOn("lintApiSpec")
     generatorName.set("kotlin-spring")
 
     inputSpec.set("src/main/spec/api-spec.yaml")
@@ -61,7 +83,7 @@ tasks.withType<KotlinCompile> {
             freeCompilerArgs.add("-Xjsr305=strict")
         }
     }
-    dependsOn(tasks.openApiGenerate)
+    dependsOn(listOf(tasks.openApiGenerate, "buildApiDocs"))
 }
 
 tasks.withType<Test> {

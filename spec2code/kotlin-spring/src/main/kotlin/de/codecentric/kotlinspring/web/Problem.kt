@@ -28,5 +28,5 @@ fun createProblem(
     detail: String,
 ): Problem = Problem(type = getType(status), title = status.reasonPhrase, status = status.value(), detail = detail)
 
-fun getType(status: HttpStatus) =
+private fun getType(status: HttpStatus) =
     "https://www.rfc-editor.org/rfc/rfc9110.html#name-${status.value()}-${status.name.lowercase().replace("_", "-")}"

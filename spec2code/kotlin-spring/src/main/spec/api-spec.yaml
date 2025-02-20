@@ -18,6 +18,7 @@ servers:
     description: Local development server
   - url: https://shelf-patrol.dofix.me
     description: Production server
+security: []
 tags:
   - name: Authors
     description: Create, read, update and delete authors.

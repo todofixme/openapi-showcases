@@ -1,2 +1,5 @@
 server.port: 7002
-spring.application.name: kotlin-spring
+spring:
+  application.name: kotlin-spring
+  web.resources.static-locations: file:build/docs/
+  mvc.static-path-pattern: /docs/**
