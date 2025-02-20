@@ -1,0 +1,17 @@
+# Generating server code with kotlin-spring
+
+This example showcases the usage of [OpenAPI generator kotlin-spring](https://openapi-generator.tech/docs/generators/kotlin-spring/) in a Spring Boot / Kotlin / Gradle application.
+
+Generation is based on an [OpenAPI spec file](src/main/spec/api-spec.yaml).
+
+## How-to run
+```shell
+./gradlew bootRun
+```
+
+## How-to test
+* use the REST-API with [some example requests](src/test/http/authors.http)
+* run all tests:
+```shell
+./gradlew test
+```

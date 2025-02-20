@@ -1,0 +1,38 @@
+### get all authors
+GET {{baseUrl}}/authors
+Accept: application/json
+
+### get all authors named Jack
+GET {{baseUrl}}/authors?search=Jack
+Accept: application/json
+
+### create author
+POST {{baseUrl}}/authors
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "Kenneth",
+  "lastName": "Parcell"
+}
+
+> {%
+    client.global.set("author_id", response.body.id)
+%}
+
+### get author
+GET {{baseUrl}}/authors/{{author_id}}
+Accept: application/json
+
+### update author
+PUT {{baseUrl}}/authors/{{author_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "Jack",
+  "lastName": "Donaghy"
+}
+
+### delete author
+DELETE {{baseUrl}}/authors/{{author_id}}
