@@ -1,4 +1,5 @@
-# Example project of springdoc-openapi
+# Generating OpenAPI specs with springdoc-openapi
+
 This example showcases the usage of [springdoc-openapi](https://springdoc.org/) in a Spring Boot / Kotlin application.
 
 ## How-to run
