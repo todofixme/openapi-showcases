@@ -12,7 +12,7 @@
     <artifactId>java-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>java-spring</name>
-    <description>java-spring</description>
+    <description>Showcase of OpenAPI generator 'spring'</description>
     <url/>
     <licenses>
         <license/>
@@ -76,6 +76,7 @@
                             <generatorName>spring</generatorName>
                             <generateApis>true</generateApis>
                             <generateSupportingFiles>true</generateSupportingFiles>
+                            <modelNameSuffix>DTO</modelNameSuffix>
                             <configOptions>
                                 <apiPackage>de.codecentric.javaspring.api</apiPackage>
                                 <modelPackage>de.codecentric.javaspring.api.model</modelPackage>
@@ -87,7 +88,6 @@
                                 <useTags>true</useTags>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
-                                <modelNameSuffix>DTO</modelNameSuffix>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -95,5 +95,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

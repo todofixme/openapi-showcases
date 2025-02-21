@@ -1,8 +1,8 @@
 package de.codecentric.javaspring.web;
 
 import de.codecentric.javaspring.api.AuthorsApi;
-import de.codecentric.javaspring.api.model.Author;
-import de.codecentric.javaspring.api.model.CreateAuthor;
+import de.codecentric.javaspring.api.model.AuthorDTO;
+import de.codecentric.javaspring.api.model.CreateAuthorDTO;
 import de.codecentric.javaspring.persistence.AuthorEntity;
 import de.codecentric.javaspring.persistence.AuthorService;
 import java.net.URI;
@@ -20,11 +20,11 @@ public class AuthorsController implements AuthorsApi {
     private final AuthorService service;
 
     @Override
-    public ResponseEntity<Author> createAuthor(CreateAuthor createAuthor) {
+    public ResponseEntity<AuthorDTO> createAuthor(CreateAuthorDTO createAuthor) {
         final AuthorEntity entity =
                 service.save(new AuthorEntity(createAuthor.getFirstName(), createAuthor.getLastName()));
         return ResponseEntity.created(URI.create("/" + entity.id()))
-                .body(new Author().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()));
+                .body(new AuthorDTO().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()));
     }
 
     @Override
@@ -34,22 +34,22 @@ public class AuthorsController implements AuthorsApi {
     }
 
     @Override
-    public ResponseEntity<Author> getAuthorById(UUID authorId) {
+    public ResponseEntity<AuthorDTO> getAuthorById(UUID authorId) {
         final AuthorEntity entity = service.get(authorId);
         return ResponseEntity
-                .ok(new Author().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()));
+                .ok(new AuthorDTO().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()));
     }
 
     @Override
-    public ResponseEntity<List<Author>> listAuthors(String search) {
-        final List<Author> authors = service.list(search).stream()
-                .map(entity -> new Author().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()))
+    public ResponseEntity<List<AuthorDTO>> listAuthors(String search) {
+        final List<AuthorDTO> authors = service.list(search).stream().map(
+                entity -> new AuthorDTO().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()))
                 .toList();
         return ResponseEntity.ok(authors);
     }
 
     @Override
-    public ResponseEntity<Void> updateAuthor(UUID authorId, CreateAuthor createAuthor) {
+    public ResponseEntity<Void> updateAuthor(UUID authorId, CreateAuthorDTO createAuthor) {
         service.get(authorId); // check if author exists
         service.save(new AuthorEntity(authorId, createAuthor.getFirstName(), createAuthor.getLastName()));
         return ResponseEntity.noContent().build();
