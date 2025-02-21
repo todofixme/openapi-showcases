@@ -1,0 +1,2 @@
+spring.application.name: java-spring
+server.port: 7003
