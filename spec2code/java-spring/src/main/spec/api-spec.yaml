@@ -37,6 +37,8 @@ paths:
       description: Returns authors currently stored in the database.
       operationId: listAuthors
       parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
         - name: search
           in: query
           description: A search term to filter the list of authors by first name or last name.
@@ -49,6 +51,15 @@ paths:
       responses:
         200:
           description: A list of authors
+          headers:
+            X-Total-Count:
+              $ref: '#/components/headers/TotalCount'
+            X-Total-Pages:
+              $ref: '#/components/headers/TotalPages'
+            X-Per-Page:
+              $ref: '#/components/headers/PerPage'
+            X-Current-Page:
+              $ref: '#/components/headers/CurrentPage'
           content:
             application/json:
               schema:
@@ -189,6 +200,28 @@ paths:
         204:
           description: Literary work created
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: The page number to be returned
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 8
+    limit:
+      name: per_page
+      in: query
+      description: The number of items to return per page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+        example: 20
   schemas:
     CreateAuthor:
       type: object
@@ -403,3 +436,20 @@ components:
             title: Not Found
             status: 404
             detail: The requested resource was not found.
+  headers:
+    TotalCount:
+      schema:
+        type: integer
+        description: Total count of all result entries.
+    TotalPages:
+      schema:
+        type: integer
+        description: Total amount of pages to show all results.
+    PerPage:
+      schema:
+        type: integer
+        description: Number of results returned per request.
+    CurrentPage:
+      schema:
+        type: integer
+        description: Number of results returned per request.

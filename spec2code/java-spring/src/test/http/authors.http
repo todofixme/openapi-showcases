@@ -1,5 +1,5 @@
 ### get all authors
-GET {{baseUrl}}/authors
+GET {{baseUrl}}/authors?per_page=1&page=10
 Accept: application/json
 
 ### get all authors named Jack

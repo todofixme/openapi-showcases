@@ -1,23 +1,25 @@
 package de.codecentric.javaspring.persistence;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthorService {
-    private final Map<UUID, AuthorEntity> store = new ConcurrentHashMap<>();
+    private final Map<UUID, Author> store = new ConcurrentHashMap<>();
 
-    public AuthorEntity get(UUID id) {
+    public Author get(UUID id) {
         if (!store.containsKey(id)) {
             throw new NotFoundException("Author", id);
         }
         return store.get(id);
     }
 
-    public AuthorEntity save(AuthorEntity author) {
+    public Author save(Author author) {
         store.put(author.id(), author);
         return author;
     }
@@ -29,12 +31,26 @@ public class AuthorService {
         store.remove(id);
     }
 
-    public List<AuthorEntity> list(String search) {
+    public PaginatedResult<Author> list(String search, int page, int perPage) {
+        final List<Author> allAuthors = List.copyOf(store.values());
+        final Stream<Author> filteredAuthors;
         if (search == null) {
-            return List.copyOf(store.values());
+            filteredAuthors = allAuthors.stream();
+        } else {
+            filteredAuthors = allAuthors.stream()
+                    .filter(author -> author.firstName().startsWith(search) || author.lastName().startsWith(search));
         }
-        return store.values().stream()
-                .filter(author -> author.firstName().startsWith(search) || author.lastName().startsWith(search))
-                .toList();
+        final List<Author> sortedAuthors = filteredAuthors.sorted(Comparator.comparing(Author::lastName)).toList();
+
+        int totalAuthors = sortedAuthors.size();
+        int totalPages = (int) Math.ceil((double) totalAuthors / perPage);
+
+        int start = (page - 1) * perPage;
+        int end = Math.min(start + perPage, totalAuthors);
+
+        final List<Author> paginatedAuthors =
+                sortedAuthors.subList(Math.min(start, totalAuthors), Math.min(end, totalAuthors));
+
+        return new PaginatedResult<>(paginatedAuthors, totalAuthors, totalPages);
     }
 }
