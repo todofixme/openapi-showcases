@@ -41,12 +41,13 @@ paths:
         - $ref: '#/components/parameters/limit'
         - name: search
           in: query
-          description: A search term to filter the list of authors by first name or last name.
+          description: |
+            A search term to filter the list of authors by first name or last name. Case insensitive.
           required: false
           schema:
             type: string
             examples:
-              - John
+              - john
               - Doe
       responses:
         200:

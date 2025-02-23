@@ -38,7 +38,8 @@ public class AuthorService {
             filteredAuthors = allAuthors.stream();
         } else {
             filteredAuthors = allAuthors.stream()
-                    .filter(author -> author.firstName().startsWith(search) || author.lastName().startsWith(search));
+                    .filter(author -> author.firstName().toLowerCase().startsWith(search.toLowerCase())
+                            || author.lastName().toLowerCase().startsWith(search.toLowerCase()));
         }
         final List<Author> sortedAuthors = filteredAuthors.sorted(Comparator.comparing(Author::lastName)).toList();
 
