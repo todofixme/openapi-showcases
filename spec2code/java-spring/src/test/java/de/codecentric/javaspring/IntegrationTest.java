@@ -2,7 +2,6 @@ package de.codecentric.javaspring;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.codecentric.javaspring.api.model.AuthorDTO;
 import de.codecentric.javaspring.api.model.CreateAuthorDTO;
 import java.util.UUID;
@@ -15,9 +14,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public class IntegrationTest {
     @Autowired
     private WebTestClient client;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     public void authorLifecycle() throws Exception {

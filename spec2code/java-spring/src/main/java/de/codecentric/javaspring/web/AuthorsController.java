@@ -20,12 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AuthorsController implements AuthorsApi {
     private final AuthorService service;
+    private final DtoMapper mapper;
 
     @Override
     public ResponseEntity<AuthorDTO> createAuthor(CreateAuthorDTO createAuthor) {
-        final Author entity = service.save(new Author(createAuthor.getFirstName(), createAuthor.getLastName()));
-        return ResponseEntity.created(URI.create("/" + entity.id()))
-                .body(new AuthorDTO().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()));
+        final Author entity = service.save(mapper.map(createAuthor));
+        return ResponseEntity //
+                .created(URI.create("/" + entity.id())) //
+                .body(mapper.map(entity));
     }
 
     @Override
@@ -37,16 +39,13 @@ public class AuthorsController implements AuthorsApi {
     @Override
     public ResponseEntity<AuthorDTO> getAuthorById(UUID authorId) {
         final Author entity = service.get(authorId);
-        return ResponseEntity
-                .ok(new AuthorDTO().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()));
+        return ResponseEntity.ok(mapper.map(entity));
     }
 
     @Override
     public ResponseEntity<List<AuthorDTO>> listAuthors(Integer page, Integer perPage, String search) {
         final PaginatedResult<Author> listOfAuthors = service.list(search, page, perPage);
-        final List<AuthorDTO> authors = listOfAuthors.results().stream().map(
-                entity -> new AuthorDTO().id(entity.id()).firstName(entity.firstName()).lastName(entity.lastName()))
-                .toList();
+        final List<AuthorDTO> authors = listOfAuthors.results().stream().map(mapper::map).toList();
         final HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("X-Total-Count", String.valueOf(listOfAuthors.totalCount()));
         responseHeaders.add("X-Total-Pages", String.valueOf(listOfAuthors.totalPages()));
@@ -58,7 +57,7 @@ public class AuthorsController implements AuthorsApi {
     @Override
     public ResponseEntity<Void> updateAuthor(UUID authorId, CreateAuthorDTO createAuthor) {
         service.get(authorId); // check if author exists
-        service.save(new Author(authorId, createAuthor.getFirstName(), createAuthor.getLastName()));
+        service.save(mapper.map(createAuthor));
         return ResponseEntity.noContent().build();
     }
 }

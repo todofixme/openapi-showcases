@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.codecentric.javaspring.JavaSpringApplication;
 import de.codecentric.javaspring.api.model.CreateAuthorDTO;
 import de.codecentric.javaspring.persistence.Author;
 import de.codecentric.javaspring.persistence.AuthorService;
@@ -22,10 +23,12 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest
+@ComponentScan(basePackageClasses = { JavaSpringApplication.class })
 class AuthorsControllerTest {
     private static final UUID ID = UUID.randomUUID();
     private static final int DEFAULT_PER_PAGE = 10;
