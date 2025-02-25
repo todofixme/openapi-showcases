@@ -1,6 +1,7 @@
 package de.codecentric.javaspring.persistence;
 
-import java.util.Comparator;
+import static java.util.Comparator.comparing;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -12,16 +13,16 @@ import org.springframework.stereotype.Service;
 public class AuthorService {
     private final Map<UUID, Author> store = new ConcurrentHashMap<>();
 
+    public Author save(Author author) {
+        store.put(author.id(), author);
+        return author;
+    }
+
     public Author get(UUID id) {
         if (!store.containsKey(id)) {
             throw new NotFoundException("Author", id);
         }
         return store.get(id);
-    }
-
-    public Author save(Author author) {
-        store.put(author.id(), author);
-        return author;
     }
 
     public void delete(UUID id) {
@@ -41,7 +42,7 @@ public class AuthorService {
                     .filter(author -> author.firstName().toLowerCase().startsWith(search.toLowerCase())
                             || author.lastName().toLowerCase().startsWith(search.toLowerCase()));
         }
-        final List<Author> sortedAuthors = filteredAuthors.sorted(Comparator.comparing(Author::lastName)).toList();
+        final List<Author> sortedAuthors = filteredAuthors.sorted(comparing(Author::lastName)).toList();
 
         int totalAuthors = sortedAuthors.size();
         int totalPages = (int) Math.ceil((double) totalAuthors / perPage);

@@ -1,0 +1,99 @@
+### get all literary works
+GET {{baseUrl}}/literature
+Accept: application/json
+
+### get all literary works containing "story" in the title
+GET {{baseUrl}}/literature?search=story
+Accept: application/json
+
+### create book
+POST {{baseUrl}}/literature
+Accept: application/json
+Content-Type: application/json
+
+{
+  "literatureType": "BOOK",
+  "title": "Short story about everything",
+  "authors": [
+    "850cf445-24dd-4753-9d1f-547f57dd0c91"
+  ],
+  "recap": "great ideas",
+  "genre": "non_fiction",
+  "isbn": "978-3-86680-192-9",
+  "pages": 100
+}
+
+> {%
+    client.global.set("literature_id", response.body.id)
+%}
+
+### create journal text
+POST {{baseUrl}}/literature
+Accept: application/json
+Content-Type: application/json
+
+{
+  "literatureType": "JOURNALTEXT",
+  "title": "State of the art",
+  "authors": [
+    "850cf445-24dd-4753-9d1f-547f57dd0c91"
+  ],
+  "recap": "what happened recently",
+  "genre": "science",
+  "issn": "2731-6858",
+  "journalTitle": "The mentalist",
+  "volume": 26,
+  "issue": 4,
+  "page": 17
+}
+
+> {%
+    client.global.set("literature_id", response.body.id)
+%}
+
+### create anthology
+POST {{baseUrl}}/literature
+Accept: application/json
+Content-Type: application/json
+
+{
+  "literatureType": "ANTHOLOGYTEXT",
+  "title": "When It Rains, It Pours",
+  "authors": [
+    "850cf445-24dd-4753-9d1f-547f57dd0c91"
+  ],
+  "recap": "great stuff",
+  "genre": "non_fiction",
+  "anthologyTitle": "Collected Works Vol. 4",
+  "editor": "Pete Hornberger",
+  "page": 124
+}
+
+> {%
+    client.global.set("literature_id", response.body.id)
+%}
+
+### get literary work
+GET {{baseUrl}}/literature/{{literature_id}}
+Accept: application/json
+
+### update literary work
+PUT {{baseUrl}}/literature/{{literature_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "literatureType": "BOOK",
+  "title": "Long story about everything",
+  "authors": [
+    "850cf445-24dd-4753-9d1f-547f57dd0c91",
+    "9cdd2d75-c3ce-4021-a2f4-9ffde5a2d280"
+  ],
+  "recap": "more great ideas",
+  "genre": "non_fiction",
+  "isbn": "978-3-86680-192-9",
+  "pages": 100
+}
+
+### delete author
+DELETE {{baseUrl}}/literature/{{literature_id}}

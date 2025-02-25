@@ -38,11 +38,12 @@ paths:
       operationId: listAuthors
       parameters:
         - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/perPage'
         - name: search
           in: query
           description: |
-            A search term to filter the list of authors by first name or last name. Case insensitive.
+            A search term to filter the list of authors by first name or last name.
+            Checks if first name or last name starts with the search term. Case insensitive.
           required: false
           schema:
             type: string
@@ -172,6 +173,21 @@ paths:
       summary: Get list of literary works
       description: Returns literary works currently stored in the database.
       operationId: listLiterature
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+        - name: search
+          in: query
+          description: |
+            A search term to filter the list of literary work by title. 
+            Checks if the title contains the search term. Case insensitive.
+          required: false
+          schema:
+            type: string
+            examples:
+              - Robinson
+              - History
+              - Universe
       responses:
         200:
           description: A list of literary works
@@ -180,7 +196,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Literature'
+                  $ref: '#/components/schemas/LiteratureResponse'
     post:
       tags:
         - Literature
@@ -193,13 +209,92 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/CreateBook'
-                - $ref: '#/components/schemas/CreateAnthologyText'
-                - $ref: '#/components/schemas/CreateJournalText'
+              $ref: '#/components/schemas/LiteratureRequest'
+      responses:
+        201:
+          description: The created literary work
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiteratureResponse'
+        400:
+          $ref: '#/components/responses/Problem400BadRequest'
+  /literature/{literatureId}:
+    get:
+      tags:
+        - Literature
+      summary: Get a literary work by ID
+      description: Returns a single literary work from the database, identified by its unique ID.
+      operationId: getLiteratureById
+      parameters:
+        - name: literatureId
+          in: path
+          description: The unique identifier of the literary work.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        200:
+          description: The literary work
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiteratureResponse'
+        400:
+          $ref: '#/components/responses/Problem400BadRequest'
+        404:
+          $ref: '#/components/responses/Problem404NotFound'
+    put:
+      tags:
+        - Literature
+      summary: Update a literary work
+      description: >
+        Updates an already existing literary work in the database, identified by its unique ID.
+      operationId: updateLiterature
+      parameters:
+        - name: literatureId
+          in: path
+          description: The unique identifier of the literary work.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiteratureRequest'
       responses:
         204:
-          description: Literary work created
+          description: Literary work updated
+        400:
+          $ref: '#/components/responses/Problem400BadRequest'
+        404:
+          $ref: '#/components/responses/Problem404NotFound'
+    delete:
+      tags:
+        - Literature
+      summary: Delete a literary work
+      description: Deletes a literary work from the database, identified by its unique ID.
+      operationId: deleteLiterature
+      parameters:
+        - name: literatureId
+          in: path
+          description: The unique identifier of the literature.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        204:
+          description: Literary work deleted
+        404:
+          $ref: '#/components/responses/Problem404NotFound'
 components:
   parameters:
     page:
@@ -212,7 +307,7 @@ components:
         minimum: 1
         default: 1
         example: 8
-    limit:
+    perPage:
       name: per_page
       in: query
       description: The number of items to return per page
@@ -263,7 +358,10 @@ components:
         authors:
           type: array
           items:
-            $ref: "#/components/schemas/Author"
+            type: string
+            format: uuid
+            description: "A Universally Unique Identifier (UUID) to uniquely identify an author."
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
         recap:
           type: string
         genre:
@@ -275,17 +373,33 @@ components:
             - drama
             - prose
             - essay
-            - scientific_article
-            - lifestyle_article
-            - sports_news
+            - science
+            - lifestyle
+            - sports
           description: The genre of the literary work.
+    LiteratureRequest:
+      discriminator:
+        mapping:
+          BOOK: '#/components/schemas/CreateBook'
+          ANTHOLOGYTEXT: '#/components/schemas/CreateAnthologyText'
+          JOURNALTEXT: '#/components/schemas/CreateJournalText'
+        propertyName: literatureType
+      oneOf:
+        - $ref: "#/components/schemas/CreateBook"
+        - $ref: "#/components/schemas/CreateAnthologyText"
+        - $ref: "#/components/schemas/CreateJournalText"
+      properties:
+        literatureType:
+          $ref: '#/components/schemas/LiteratureType'
+      required:
+        - literatureType
     LiteratureType:
       enum:
         - BOOK
         - ANTHOLOGYTEXT
         - JOURNALTEXT
       type: string
-    Literature:
+    LiteratureResponse:
       discriminator:
         mapping:
           BOOK: '#/components/schemas/Book'
@@ -311,6 +425,9 @@ components:
           properties:
             isbn:
               type: string
+              description: |
+                The International Standard Book Number (ISBN) is a unique identifier for books.
+              example: "978-3-86680-192-9"
             pages:
               type: integer
     Book:
@@ -353,11 +470,17 @@ components:
         - $ref: "#/components/schemas/LiteratureBase"
         - type: object
           required:
+            - issn
             - journalTitle
             - volume
             - issue
             - page
           properties:
+            issn:
+              type: string
+              description: |
+                The International Standard Serial Number (ISSN) is an eight-digit number used to identify a periodical publication.
+              example: "1234-5678"
             journalTitle:
               type: string
               example: "Journal of Science"

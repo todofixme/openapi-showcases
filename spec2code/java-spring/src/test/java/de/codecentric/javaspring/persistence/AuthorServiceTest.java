@@ -1,7 +1,10 @@
 package de.codecentric.javaspring.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +73,7 @@ public class AuthorServiceTest {
         assertThat(result.totalCount()).isEqualTo(4);
         assertThat(result.totalPages()).isEqualTo(1);
 
-        assertThat(result.results()).containsExactlyInAnyOrder(needle1, needle2, needle3, needle4);
+        assertThat((List<Author>) result.results()).containsExactlyInAnyOrder(needle1, needle2, needle3, needle4);
     }
 
     @Test
@@ -91,6 +94,15 @@ public class AuthorServiceTest {
         assertThat(result.results()).hasSize(0);
         assertThat(result.totalCount()).isEqualTo(20);
         assertThat(result.totalPages()).isEqualTo(2);
+    }
+
+    @Test
+    public void getAuthor_handleNonExistentEntity() {
+        final UUID id = UUID.randomUUID();
+        assertThatThrownBy( //
+                () -> cut.get(id)) //
+                .isInstanceOf(NotFoundException.class) //
+                .hasMessage("Author with ID %s not found.", id);
     }
 
     private void createRandomAuthors(int x) {

@@ -26,6 +26,16 @@ class DtoMapperTest {
     }
 
     @Test
+    void fromCreateAuthorDto_withId() {
+        final UUID id = UUID.randomUUID();
+        final CreateAuthorDTO dto = new CreateAuthorDTO("John", "Doe");
+
+        final Author entity = mapper.map(dto, id);
+
+        assertThat(entity.id()).isEqualTo(id);
+    }
+
+    @Test
     void fromAuthorDto() {
         final AuthorDTO dto = new AuthorDTO("John", "Doe", UUID.randomUUID());
 
