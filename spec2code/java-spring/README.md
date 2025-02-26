@@ -21,3 +21,9 @@ mvn test
 mvn clean verify -DskipTests -PdocGen
 ```
 * Run the application and access the [API documentation](http://localhost:7003/docs/api-spec.html)
+
+## Run as Docker container
+```shell
+mvn spring-boot:build-image
+docker run --rm --name sp-java-spring -p 7003:7003 todofixme/shelf-patrol-java-spring
+```

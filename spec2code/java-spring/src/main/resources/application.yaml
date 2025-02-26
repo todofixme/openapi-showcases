@@ -1,2 +1,5 @@
-spring.application.name: java-spring
 server.port: 7003
+spring:
+  application.name: shelf-patrol-java-spring
+  web.resources.static-locations: file:target/docs,classpath:/docs
+  mvc.static-path-pattern: /docs/**
