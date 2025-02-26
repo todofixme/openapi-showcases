@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>de.codecentric</groupId>
-    <artifactId>java-spring</artifactId>
+    <artifactId>shelf-patrol-java-spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>java-spring</name>
+    <name>Shelf Patrol API with Java/Spring/Maven</name>
     <description>Showcase of OpenAPI generator 'spring'</description>
     <url/>
     <licenses>
@@ -148,4 +148,30 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>docGen</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>redocly-build-docs</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${basedir}/src/main/script/redocly-build-docs.sh</executable>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

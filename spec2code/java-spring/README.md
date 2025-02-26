@@ -15,3 +15,9 @@ mvn spring-boot:run
 ```shell
 mvn test
 ```
+## API documentation
+* Generate the API documentation with [Redocly CLI](https://redocly.com/docs/cli/commands/build-docs):
+```shell
+mvn clean verify -DskipTests -PdocGen
+```
+* Run the application and access the [API documentation](http://localhost:7003/docs/api-spec.html)
