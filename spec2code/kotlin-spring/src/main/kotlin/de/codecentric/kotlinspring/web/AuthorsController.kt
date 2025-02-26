@@ -16,8 +16,11 @@ import java.util.UUID
 class AuthorsController(
     val service: AuthorService,
 ) : AuthorsApi {
-    override fun listAuthors(search: String?): ResponseEntity<List<AuthorDTO>> =
-        ResponseEntity.ok(service.list(search).map { it.toDto() })
+    override fun listAuthors(
+        page: Int,
+        perPage: Int,
+        search: String?,
+    ): ResponseEntity<List<AuthorDTO>> = ResponseEntity.ok(service.list(search).map { it.toDto() })
 
     override fun createAuthor(createAuthorDTO: CreateAuthorDTO): ResponseEntity<AuthorDTO> {
         val author = service.save(createAuthorDTO.toAuthor())
@@ -43,8 +46,8 @@ class AuthorsController(
     }
 }
 
-private fun Author.toDto() = AuthorDTO(id, firstName, lastName)
+private fun Author.toDto() = AuthorDTO(id = id, firstName = firstName, lastName = lastName)
 
 private fun CreateAuthorDTO.toAuthor() = Author(firstName = firstName, lastName = lastName)
 
-private fun CreateAuthorDTO.toAuthor(id: UUID) = Author(id, firstName, lastName)
+private fun CreateAuthorDTO.toAuthor(id: UUID) = Author(id = id, firstName = firstName, lastName = lastName)

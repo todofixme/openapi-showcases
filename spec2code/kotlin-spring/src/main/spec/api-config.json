@@ -10,5 +10,6 @@
   "interfaceOnly": "true",
   "useSpringBoot3": "true",
   "modelNameSuffix": "DTO",
-  "useOneOfDiscriminatorLookup": true
+  "useOneOfDiscriminatorLookup": true,
+  "useOneOfInterfaces": true
 }
