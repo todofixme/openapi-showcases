@@ -32,7 +32,7 @@ public class LiteratureService {
         store.remove(id);
     }
 
-    public PaginatedResult<Literature> list(String search, int page, int perPage) {
+    public PaginatedResult<Literature> listAll(String search, int page, int perPage) {
         final List<Literature> allLiterature = List.copyOf(store.values());
         final Stream<Literature> filteredLiterature;
         if (search == null) {
@@ -46,12 +46,28 @@ public class LiteratureService {
         int totalResults = sortedLiterature.size();
         int totalPages = (int) Math.ceil((double) totalResults / perPage);
 
-        int start = (page - 1) * perPage;
-        int end = Math.min(start + perPage, totalResults);
-
-        final List<Literature> paginatedLiterature =
-                sortedLiterature.subList(Math.min(start, totalResults), Math.min(end, totalResults));
+        final List<Literature> paginatedLiterature = //
+                sortedLiterature.stream() //
+                        .skip((long) (page - 1) * perPage) //
+                        .limit(perPage) //
+                        .toList();
 
         return new PaginatedResult<>(paginatedLiterature, totalResults, totalPages);
+    }
+
+    public PaginatedResult<Literature> listAllByAuthorId(UUID authorId, int page, int perPage) {
+        final List<Literature> filtered = List.copyOf(store.values()).stream() //
+                .filter(literature -> literature.getAuthors().contains(authorId)) //
+                .sorted(comparing(Literature::getTitle)).toList();
+
+        final List<Literature> paginated = filtered.stream() //
+                .skip((long) (page - 1) * perPage) //
+                .limit(perPage) //
+                .toList();
+
+        int totalItems = filtered.size();
+        int totalPages = (int) Math.ceil((double) totalItems / perPage);
+
+        return new PaginatedResult<>(paginated, totalItems, totalPages);
     }
 }

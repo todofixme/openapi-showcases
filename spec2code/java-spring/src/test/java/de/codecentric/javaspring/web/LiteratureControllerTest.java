@@ -65,7 +65,7 @@ public class LiteratureControllerTest {
 
     @Test
     public void listLiterature() throws Exception {
-        when(service.list(null, 1, DEFAULT_PER_PAGE))
+        when(service.listAll(null, 1, DEFAULT_PER_PAGE))
                 .thenReturn(new PaginatedResult<>(generateRandomBooks(10), 100, 10));
 
         mockMvc.perform(get("/api/v1/literature") //
@@ -77,6 +77,6 @@ public class LiteratureControllerTest {
                 .andExpect(header().string("X-Current-Page", "1")) //
                 .andExpect(jsonPath("$.size()").value(10));
 
-        verify(service).list(null, 1, DEFAULT_PER_PAGE);
+        verify(service).listAll(null, 1, DEFAULT_PER_PAGE);
     }
 }

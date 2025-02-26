@@ -37,8 +37,8 @@ paths:
       description: Returns authors currently stored in the database.
       operationId: listAuthors
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/perPage'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
         - name: search
           in: query
           description: |
@@ -55,19 +55,19 @@ paths:
           description: A list of authors
           headers:
             X-Total-Count:
-              $ref: '#/components/headers/TotalCount'
+              $ref: "#/components/headers/TotalCount"
             X-Total-Pages:
-              $ref: '#/components/headers/TotalPages'
+              $ref: "#/components/headers/TotalPages"
             X-Per-Page:
-              $ref: '#/components/headers/PerPage'
+              $ref: "#/components/headers/PerPage"
             X-Current-Page:
-              $ref: '#/components/headers/CurrentPage'
+              $ref: "#/components/headers/CurrentPage"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Author'
+                  $ref: "#/components/schemas/Author"
     post:
       tags:
         - Authors
@@ -80,16 +80,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAuthor'
+              $ref: "#/components/schemas/CreateAuthor"
       responses:
         201:
           description: The created author
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
+                $ref: "#/components/schemas/Author"
         400:
-          $ref: '#/components/responses/Problem400BadRequest'
+          $ref: "#/components/responses/Problem400BadRequest"
   /authors/{authorId}:
     get:
       tags:
@@ -112,11 +112,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Author'
+                $ref: "#/components/schemas/Author"
         400:
-          $ref: '#/components/responses/Problem400BadRequest'
+          $ref: "#/components/responses/Problem400BadRequest"
         404:
-          $ref: '#/components/responses/Problem404NotFound'
+          $ref: "#/components/responses/Problem404NotFound"
     put:
       tags:
         - Authors
@@ -138,14 +138,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAuthor'
+              $ref: "#/components/schemas/CreateAuthor"
       responses:
         204:
           description: Author updated
         400:
-          $ref: '#/components/responses/Problem400BadRequest'
+          $ref: "#/components/responses/Problem400BadRequest"
         404:
-          $ref: '#/components/responses/Problem404NotFound'
+          $ref: "#/components/responses/Problem404NotFound"
     delete:
       tags:
         - Authors
@@ -165,7 +165,34 @@ paths:
         204:
           description: Author deleted
         404:
-          $ref: '#/components/responses/Problem404NotFound'
+          $ref: "#/components/responses/Problem404NotFound"
+  /authors/{authorId}/literature:
+    get:
+      tags:
+        - Authors
+      summary: Get list of the authors literary works
+      description: Returns all literary works of that author currently stored in the database.
+      operationId: listAuthorsLiterature
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
+        - name: authorId
+          in: path
+          description: The unique identifier of the author.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        200:
+          description: A list of literary works
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LiteratureResponse"
   /literature:
     get:
       tags:
@@ -174,8 +201,8 @@ paths:
       description: Returns literary works currently stored in the database.
       operationId: listLiterature
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/perPage'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
         - name: search
           in: query
           description: |
@@ -196,7 +223,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LiteratureResponse'
+                  $ref: "#/components/schemas/LiteratureResponse"
     post:
       tags:
         - Literature
@@ -209,16 +236,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LiteratureRequest'
+              $ref: "#/components/schemas/LiteratureRequest"
       responses:
         201:
           description: The created literary work
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LiteratureResponse'
+                $ref: "#/components/schemas/LiteratureResponse"
         400:
-          $ref: '#/components/responses/Problem400BadRequest'
+          $ref: "#/components/responses/Problem400BadRequest"
   /literature/{literatureId}:
     get:
       tags:
@@ -241,11 +268,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LiteratureResponse'
+                $ref: "#/components/schemas/LiteratureResponse"
         400:
-          $ref: '#/components/responses/Problem400BadRequest'
+          $ref: "#/components/responses/Problem400BadRequest"
         404:
-          $ref: '#/components/responses/Problem404NotFound'
+          $ref: "#/components/responses/Problem404NotFound"
     put:
       tags:
         - Literature
@@ -267,14 +294,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LiteratureRequest'
+              $ref: "#/components/schemas/LiteratureRequest"
       responses:
         204:
           description: Literary work updated
         400:
-          $ref: '#/components/responses/Problem400BadRequest'
+          $ref: "#/components/responses/Problem400BadRequest"
         404:
-          $ref: '#/components/responses/Problem404NotFound'
+          $ref: "#/components/responses/Problem404NotFound"
     delete:
       tags:
         - Literature
@@ -294,7 +321,7 @@ paths:
         204:
           description: Literary work deleted
         404:
-          $ref: '#/components/responses/Problem404NotFound'
+          $ref: "#/components/responses/Problem404NotFound"
 components:
   parameters:
     page:
@@ -380,9 +407,9 @@ components:
     LiteratureRequest:
       discriminator:
         mapping:
-          BOOK: '#/components/schemas/CreateBook'
-          ANTHOLOGYTEXT: '#/components/schemas/CreateAnthologyText'
-          JOURNALTEXT: '#/components/schemas/CreateJournalText'
+          BOOK: "#/components/schemas/CreateBook"
+          ANTHOLOGYTEXT: "#/components/schemas/CreateAnthologyText"
+          JOURNALTEXT: "#/components/schemas/CreateJournalText"
         propertyName: literatureType
       oneOf:
         - $ref: "#/components/schemas/CreateBook"
@@ -390,7 +417,7 @@ components:
         - $ref: "#/components/schemas/CreateJournalText"
       properties:
         literatureType:
-          $ref: '#/components/schemas/LiteratureType'
+          $ref: "#/components/schemas/LiteratureType"
       required:
         - literatureType
     LiteratureType:
@@ -402,9 +429,9 @@ components:
     LiteratureResponse:
       discriminator:
         mapping:
-          BOOK: '#/components/schemas/Book'
-          ANTHOLOGYTEXT: '#/components/schemas/AnthologyText'
-          JOURNALTEXT: '#/components/schemas/JournalText'
+          BOOK: "#/components/schemas/Book"
+          ANTHOLOGYTEXT: "#/components/schemas/AnthologyText"
+          JOURNALTEXT: "#/components/schemas/JournalText"
         propertyName: literatureType
       oneOf:
         - $ref: "#/components/schemas/Book"
@@ -412,7 +439,7 @@ components:
         - $ref: "#/components/schemas/JournalText"
       properties:
         literatureType:
-          $ref: '#/components/schemas/LiteratureType'
+          $ref: "#/components/schemas/LiteratureType"
       required:
         - literatureType
     CreateBook:
@@ -521,16 +548,16 @@ components:
       properties:
         type:
           type: string
-          example: 'about:blank'
+          example: "about:blank"
         title:
           type: string
-          example: 'Error class'
+          example: "Error class"
         status:
           type: integer
           example: 404
         detail:
           type: string
-          example: 'Failure message.'
+          example: "Failure message."
   responses:
     Problem400BadRequest:
       description: |
@@ -540,9 +567,9 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/Problem'
+              - $ref: "#/components/schemas/Problem"
           example:
-            type: 'https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request'
+            type: "https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request"
             title: Bad Request
             status: 400
             detail: The request is invalid or missing required parameters.
@@ -554,9 +581,9 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: '#/components/schemas/Problem'
+              - $ref: "#/components/schemas/Problem"
           example:
-            type: 'https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found'
+            type: "https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found"
             title: Not Found
             status: 404
             detail: The requested resource was not found.

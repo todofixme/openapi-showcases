@@ -24,6 +24,10 @@ Content-Type: application/json
 GET {{baseUrl}}/authors/{{author_id}}
 Accept: application/json
 
+### get literature of author
+GET {{baseUrl}}/authors/{{author_id}}/literature
+Accept: application/json
+
 ### update author
 PUT {{baseUrl}}/authors/{{author_id}}
 Accept: application/json

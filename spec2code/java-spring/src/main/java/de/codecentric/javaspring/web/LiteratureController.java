@@ -53,7 +53,7 @@ public class LiteratureController implements LiteratureApi {
 
     @Override
     public ResponseEntity<List<LiteratureResponseDTO>> listLiterature(Integer page, Integer perPage, String search) {
-        final PaginatedResult<Literature> results = service.list(search, page, perPage);
+        final PaginatedResult<Literature> results = service.listAll(search, page, perPage);
         final List<LiteratureResponseDTO> literature = results.results().stream().map(mapper::map).toList();
         final HttpHeaders responseHeaders = results.getHeaders();
         responseHeaders.add("X-Per-Page", String.valueOf(perPage));

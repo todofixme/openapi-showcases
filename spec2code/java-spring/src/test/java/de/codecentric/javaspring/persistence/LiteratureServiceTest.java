@@ -26,10 +26,14 @@ public class LiteratureServiceTest {
     }
 
     private static Book randomBook(String title) {
+        return randomBook(title, UUID.randomUUID());
+    }
+
+    private static Book randomBook(String title, UUID authorId) {
         return Book.builder() //
                 .id(UUID.randomUUID()) //
                 .title(title) //
-                .authors(Set.of(UUID.randomUUID())) //
+                .authors(Set.of(authorId, UUID.randomUUID())) //
                 .recap(RandomStringUtils.insecure().nextAlphabetic(800)) //
                 .genre(randomGenre()) //
                 .isbn(RandomStringUtils.insecure().nextNumeric(17)) //
@@ -79,7 +83,7 @@ public class LiteratureServiceTest {
         createRandomJournalTexts(8);
         createRandomAnthologyTexts(3);
 
-        final PaginatedResult<Literature> result = cut.list(null, 1, 10);
+        final PaginatedResult<Literature> result = cut.listAll(null, 1, 10);
 
         assertThat(result.results()).hasSize(10);
         assertThat(result.totalCount()).isEqualTo(15);
@@ -100,7 +104,7 @@ public class LiteratureServiceTest {
         createRandomJournalTexts(5);
         createRandomAnthologyTexts(2);
 
-        final PaginatedResult<Literature> result = cut.list("pigeons", 1, 10);
+        final PaginatedResult<Literature> result = cut.listAll("pigeons", 1, 10);
 
         assertThat(result.results()).hasSize(3);
         assertThat(result.totalCount()).isEqualTo(3);
@@ -119,7 +123,7 @@ public class LiteratureServiceTest {
         cut.save(bookA);
         cut.save(anthologyT);
 
-        final PaginatedResult<Literature> result = cut.list(null, 1, 10);
+        final PaginatedResult<Literature> result = cut.listAll(null, 1, 10);
 
         assertThat(result.results()).hasSize(3);
         assertThat(result.totalCount()).isEqualTo(3);
@@ -132,7 +136,7 @@ public class LiteratureServiceTest {
 
     @Test
     public void getAllLiteratureWorks_handleEmptyStore() {
-        final PaginatedResult<Literature> result = cut.list(null, 1, 10);
+        final PaginatedResult<Literature> result = cut.listAll(null, 1, 10);
 
         assertThat(result.results()).hasSize(0);
         assertThat(result.totalCount()).isEqualTo(0);
@@ -143,7 +147,7 @@ public class LiteratureServiceTest {
     public void getAllLiteratureWorks_handleNonExistingPage() {
         createRandomBooks(20);
 
-        final PaginatedResult<Literature> result = cut.list(null, 5, 10);
+        final PaginatedResult<Literature> result = cut.listAll(null, 5, 10);
 
         assertThat(result.results()).hasSize(0);
         assertThat(result.totalCount()).isEqualTo(20);
@@ -169,6 +173,29 @@ public class LiteratureServiceTest {
                 () -> cut.get(id)) //
                 .isInstanceOf(NotFoundException.class) //
                 .hasMessage("Literature with ID %s not found.", id);
+    }
+
+    @Test
+    public void listAllByAuthorId() {
+        final UUID authorId = UUID.randomUUID();
+
+        final Book bookS = randomBook("Some random book", authorId);
+        final Book bookT = randomBook("The book of books", authorId);
+        final Book bookA = randomBook("A book for the ages", authorId);
+        cut.save(bookS);
+        cut.save(bookT);
+        cut.save(bookA);
+        createRandomBooks(40);
+
+        PaginatedResult<Literature> result = cut.listAllByAuthorId(authorId, 1, 10);
+
+        assertThat(result.results()).hasSize(3);
+        assertThat(result.totalCount()).isEqualTo(3);
+        assertThat(result.totalPages()).isEqualTo(1);
+
+        assertThat(result.results().get(0)).isEqualTo(bookA);
+        assertThat(result.results().get(1)).isEqualTo(bookS);
+        assertThat(result.results().get(2)).isEqualTo(bookT);
     }
 
     private void createRandomBooks(int count) {
