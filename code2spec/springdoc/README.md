@@ -2,6 +2,18 @@
 
 This example showcases the usage of [springdoc-openapi](https://springdoc.org/) in a Spring Boot / Kotlin application.
 
+## Current state
+
+- [x] simple model
+- [x] simple path
+- [ ] complex model
+- [ ] enums
+- [ ] inheritence
+- [ ] complex paths
+- [ ] header
+- [ ] references
+- [ ] security
+
 ## How-to run
 ```shell
 ./gradlew bootRun

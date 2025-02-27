@@ -1,0 +1,646 @@
+openapi: 3.1.0
+info:
+  title: Shelf Patrol API
+  description: |-
+    **Shelf Patrol helps to index and search your bookshelf.**
+    
+    This defines the API of the Shelf Patrol backend based on the OpenAPI 3.1 specification.
+  version: 1.0.0
+  contact:
+    name: Shelf Patrol Team
+    url: https://example.com/team
+    email: support@example.com
+  license:
+    name: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+    identifier: CC-BY-NC-SA-4.0
+servers:
+  - url: http://localhost:7001/api/v1
+    description: Local development server (springdoc)
+  - url: http://localhost:7002/api/v1
+    description: Local development server (kotlin-spring)
+  - url: http://localhost:7003/api/v1
+    description: Local development server (java-spring)
+  - url: https://shelf-patrol.dofix.me/api/v1
+    description: Production server
+security:
+- oauth2:
+  - author:read
+  - literature:read
+tags:
+  - name: Authors
+    description: Create, read, update and delete authors of literary works.
+  - name: Literature
+    description: |
+      Create, read, update and delete items of literary works.
+      This includes books, articles, essays and other written works 
+      or in general any body of written material that expresses ideas, emotions, stories or concepts through language.
+      Assign authors to literature.
+paths:
+  /authors:
+    get:
+      tags:
+        - Authors
+      summary: Get list of authors
+      description: Returns authors currently stored in the database.
+      operationId: listAuthors
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
+        - name: search
+          in: query
+          description: |
+            A search term to filter the list of authors by first name or last name.
+            Checks if first name or last name starts with the search term. Case insensitive.
+          required: false
+          schema:
+            type: string
+            examples:
+              - john
+              - Doe
+      responses:
+        200:
+          description: A list of authors
+          headers:
+            X-Total-Count:
+              $ref: "#/components/headers/TotalCount"
+            X-Total-Pages:
+              $ref: "#/components/headers/TotalPages"
+            X-Per-Page:
+              $ref: "#/components/headers/PerPage"
+            X-Current-Page:
+              $ref: "#/components/headers/CurrentPage"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Author"
+    post:
+      tags:
+        - Authors
+      security:
+      - oauth2:
+        - author:create
+      summary: Create a new author
+      description: |
+        Creates an entry for an author in the database.
+      operationId: createAuthor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAuthor"
+      responses:
+        201:
+          description: The created author
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        400:
+          $ref: "#/components/responses/Problem400BadRequest"
+  /authors/{authorId}:
+    get:
+      tags:
+        - Authors
+      summary: Get an author by ID
+      description: Returns a single author from the database, identified by its unique ID.
+      operationId: getAuthorById
+      parameters:
+        - name: authorId
+          in: path
+          description: The unique identifier of the author.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        200:
+          description: The author
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        400:
+          $ref: "#/components/responses/Problem400BadRequest"
+        404:
+          $ref: "#/components/responses/Problem404NotFound"
+    put:
+      tags:
+        - Authors
+      security:
+      - oauth2:
+        - author:modify
+      summary: Update an author
+      description: >
+        Updates an already existing author in the database, identified by its unique ID.
+      operationId: updateAuthor
+      parameters:
+        - name: authorId
+          in: path
+          description: The unique identifier of the author.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAuthor"
+      responses:
+        204:
+          description: Author updated
+        400:
+          $ref: "#/components/responses/Problem400BadRequest"
+        404:
+          $ref: "#/components/responses/Problem404NotFound"
+    delete:
+      tags:
+        - Authors
+      security:
+      - oauth2:
+        - author:delete
+      summary: Delete an author
+      description: Deletes an author from the database, identified by its unique ID.
+      operationId: deleteAuthor
+      parameters:
+        - name: authorId
+          in: path
+          description: The unique identifier of the author.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        204:
+          description: Author deleted
+        404:
+          $ref: "#/components/responses/Problem404NotFound"
+  /authors/{authorId}/literature:
+    get:
+      tags:
+        - Authors
+      summary: Get list of the authors literary works
+      description: Returns all literary works of that author currently stored in the database.
+      operationId: listAuthorsLiterature
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
+        - name: authorId
+          in: path
+          description: The unique identifier of the author.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        200:
+          description: A list of literary works
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LiteratureResponse"
+  /literature:
+    get:
+      tags:
+        - Literature
+      summary: Get list of literary works
+      description: Returns literary works currently stored in the database.
+      operationId: listLiterature
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
+        - name: search
+          in: query
+          description: |
+            A search term to filter the list of literary work by title. 
+            Checks if the title contains the search term. Case insensitive.
+          required: false
+          schema:
+            type: string
+            examples:
+              - Robinson
+              - History
+              - Universe
+      responses:
+        200:
+          description: A list of literary works
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LiteratureResponse"
+    post:
+      tags:
+        - Literature
+      security:
+      - oauth2:
+        - literature:create
+      summary: Create a literary work
+      description: |
+        Creates an entry for a literary work in the database.
+      operationId: createLiterature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LiteratureRequest"
+      responses:
+        201:
+          description: The created literary work
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiteratureResponse"
+        400:
+          $ref: "#/components/responses/Problem400BadRequest"
+  /literature/{literatureId}:
+    get:
+      tags:
+        - Literature
+      summary: Get a literary work by ID
+      description: Returns a single literary work from the database, identified by its unique ID.
+      operationId: getLiteratureById
+      parameters:
+        - name: literatureId
+          in: path
+          description: The unique identifier of the literary work.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        200:
+          description: The literary work
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiteratureResponse"
+        400:
+          $ref: "#/components/responses/Problem400BadRequest"
+        404:
+          $ref: "#/components/responses/Problem404NotFound"
+    put:
+      tags:
+        - Literature
+      security:
+      - oauth2:
+        - literature:modify
+      summary: Update a literary work
+      description: >
+        Updates an already existing literary work in the database, identified by its unique ID.
+      operationId: updateLiterature
+      parameters:
+        - name: literatureId
+          in: path
+          description: The unique identifier of the literary work.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LiteratureRequest"
+      responses:
+        204:
+          description: Literary work updated
+        400:
+          $ref: "#/components/responses/Problem400BadRequest"
+        404:
+          $ref: "#/components/responses/Problem404NotFound"
+    delete:
+      tags:
+        - Literature
+      security:
+      - oauth2:
+        - literature:delete
+      summary: Delete a literary work
+      description: Deletes a literary work from the database, identified by its unique ID.
+      operationId: deleteLiterature
+      parameters:
+        - name: literatureId
+          in: path
+          description: The unique identifier of the literature.
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+      responses:
+        204:
+          description: Literary work deleted
+        404:
+          $ref: "#/components/responses/Problem404NotFound"
+components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: The page number to be returned
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 8
+    perPage:
+      name: per_page
+      in: query
+      description: The number of items to return per page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+        example: 20
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://learn.openapis.org/oauth/2.0/token
+          scopes:
+            author:read: Read the author/s
+            author:create: Create a new author
+            author:modify: Update an author
+            author:delete: Delete an author
+            literature:read: Read all literary works
+            literature:create: Create a new literary work
+            literature:modify: Update a literary work
+            literature:delete: Delete a literary work
+  schemas:
+    CreateAuthor:
+      type: object
+      properties:
+        firstName:
+          type: "string"
+          description: "The first name of the author."
+          example: "John"
+        lastName:
+          type: "string"
+          description: "The last name of the author."
+          example: "Doe"
+      required:
+        - firstName
+        - lastName
+    Author:
+      allOf:
+        - $ref: "#/components/schemas/CreateAuthor"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: "A Universally Unique Identifier (UUID) to uniquely identify an author."
+              example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+          required:
+            - id
+            - firstName
+            - lastName
+    LiteratureBase:
+      type: object
+      required:
+        - title
+        - authors
+      properties:
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+            format: uuid
+            description: "A Universally Unique Identifier (UUID) to uniquely identify an author."
+            example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+        recap:
+          type: string
+        genre:
+          type: string
+          enum:
+            - fiction
+            - non_fiction
+            - poetry
+            - drama
+            - prose
+            - essay
+            - science
+            - lifestyle
+            - sports
+          description: The genre of the literary work.
+    LiteratureRequest:
+      discriminator:
+        mapping:
+          BOOK: "#/components/schemas/CreateBook"
+          ANTHOLOGYTEXT: "#/components/schemas/CreateAnthologyText"
+          JOURNALTEXT: "#/components/schemas/CreateJournalText"
+        propertyName: literatureType
+      oneOf:
+        - $ref: "#/components/schemas/CreateBook"
+        - $ref: "#/components/schemas/CreateAnthologyText"
+        - $ref: "#/components/schemas/CreateJournalText"
+      properties:
+        literatureType:
+          $ref: "#/components/schemas/LiteratureType"
+      required:
+        - literatureType
+    LiteratureType:
+      enum:
+        - BOOK
+        - ANTHOLOGYTEXT
+        - JOURNALTEXT
+      type: string
+    LiteratureResponse:
+      discriminator:
+        mapping:
+          BOOK: "#/components/schemas/Book"
+          ANTHOLOGYTEXT: "#/components/schemas/AnthologyText"
+          JOURNALTEXT: "#/components/schemas/JournalText"
+        propertyName: literatureType
+      oneOf:
+        - $ref: "#/components/schemas/Book"
+        - $ref: "#/components/schemas/AnthologyText"
+        - $ref: "#/components/schemas/JournalText"
+      properties:
+        literatureType:
+          $ref: "#/components/schemas/LiteratureType"
+      required:
+        - literatureType
+    CreateBook:
+      allOf:
+        - $ref: "#/components/schemas/LiteratureBase"
+        - type: object
+          required:
+            - isbn
+            - pages
+          properties:
+            isbn:
+              type: string
+              description: |
+                The International Standard Book Number (ISBN) is a unique identifier for books.
+              example: "978-3-86680-192-9"
+            pages:
+              type: integer
+    Book:
+      allOf:
+        - $ref: "#/components/schemas/CreateBook"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: "A Universally Unique Identifier (UUID) to uniquely identify a book."
+              example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+    CreateAnthologyText:
+      allOf:
+        - $ref: "#/components/schemas/LiteratureBase"
+        - type: object
+          required:
+            - anthologyTitle
+            - editor
+            - page
+          properties:
+            anthologyTitle:
+              type: string
+            editor:
+              type: string
+            page:
+              type: integer
+    AnthologyText:
+      allOf:
+        - $ref: "#/components/schemas/CreateAnthologyText"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: "A Universally Unique Identifier (UUID) to uniquely identify an anthology text."
+              example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+    CreateJournalText:
+      allOf:
+        - $ref: "#/components/schemas/LiteratureBase"
+        - type: object
+          required:
+            - issn
+            - journalTitle
+            - volume
+            - issue
+            - page
+          properties:
+            issn:
+              type: string
+              description: |
+                The International Standard Serial Number (ISSN) is an eight-digit number used to identify a periodical publication.
+              example: "1234-5678"
+            journalTitle:
+              type: string
+              example: "Journal of Science"
+            volume:
+              type: integer
+              description: |
+                Refers to the collection of all issues published within a specific year or a defined period.
+                A volume typically corresponds to a journal’s yearly output. For example, Volume 8 indicates 
+                the eighth year of publication for the journal.
+              example: 8
+            issue:
+              type: integer
+              description: |
+                Refers to an individual publication within a volume.
+                For example, Issue 4 would be the fourth publication within a specific volume.
+              example: 4
+            page:
+              type: integer
+              description: The page number of the journal text within the issue.
+              example: 108
+    JournalText:
+      allOf:
+        - $ref: "#/components/schemas/CreateJournalText"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: "A Universally Unique Identifier (UUID) to uniquely identify a journal text."
+              example: "4a556026-4bbc-417c-b91e-52a2908cf8e5"
+    Problem:
+      required:
+        - type
+        - title
+        - status
+        - detail
+      type: object
+      properties:
+        type:
+          type: string
+          example: "about:blank"
+        title:
+          type: string
+          example: "Error class"
+        status:
+          type: integer
+          example: 404
+        detail:
+          type: string
+          example: "Failure message."
+  responses:
+    Problem400BadRequest:
+      description: |
+        The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax).
+        Problem object is based on RFC 7807 (Problem Details for HTTP APIs).
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/Problem"
+          example:
+            type: "https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request"
+            title: Bad Request
+            status: 400
+            detail: The request is invalid or missing required parameters.
+    Problem404NotFound:
+      description: |
+        The origin server did not find a current representation for the target resource.
+        Problem object is based on RFC 7807 (Problem Details for HTTP APIs).
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/Problem"
+          example:
+            type: "https://www.rfc-editor.org/rfc/rfc9110.html#name-404-not-found"
+            title: Not Found
+            status: 404
+            detail: The requested resource was not found.
+  headers:
+    TotalCount:
+      schema:
+        type: integer
+        description: Total count of all result entries.
+    TotalPages:
+      schema:
+        type: integer
+        description: Total amount of pages to show all results.
+    PerPage:
+      schema:
+        type: integer
+        description: Number of results returned per request.
+    CurrentPage:
+      schema:
+        type: integer
+        description: Number of results returned per request.

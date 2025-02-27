@@ -4,13 +4,25 @@ This example showcases the usage of [OpenAPI generator spring](https://openapi-g
 
 Generation is based on an [OpenAPI spec file](src/main/spec/api-spec.yaml).
 
+## Current state
+
+- [x] simple model
+- [x] simple path
+- [x] complex model
+- [x] enums
+- [x] inheritence
+- [x] complex paths
+- [x] header
+- [x] references
+- [ ] security
+
 ## How-to run
 ```shell
 mvn spring-boot:run
 ```
 
 ## How-to test
-* use the REST-API with [some example requests](src/test/http/authors.http)
+* use the REST-API with [some example](src/test/http/authors.http) [requests](src/test/http/literature.http)
 * run all tests:
 ```shell
 mvn test
