@@ -1,15 +1,44 @@
-### get all authors
-GET {{baseUrl}}/authors?per_page=1&page=10
-Accept: application/json
+### Get JWT-token as admin (roles author:read and author:write).
+POST {{keycloakUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
 
-### get all authors named Jack
+grant_type = password &
+client_id = {{keycloakClientId}} &
+username = {{keycloakUser}} &
+password = {{keycloakPassword}}
+
+> {%
+    client.global.set("auth_token", response.body.access_token)
+%}
+
+### Get JWT-token as user (role author:read).
+POST {{keycloakUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type = password &
+client_id = {{keycloakClientId}} &
+username = user &
+password = user
+
+> {%
+    client.global.set("auth_token", response.body.access_token)
+%}
+
+### get all authors (role author:read required)
+GET {{baseUrl}}/authors?per_page=10&page=1
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### get all authors named Jack (role author:read required)
 GET {{baseUrl}}/authors?search=Jack
 Accept: application/json
+Authorization: Bearer {{auth_token}}
 
-### create author
+### create author (role author:write required)
 POST {{baseUrl}}/authors
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "firstName": "Kenneth",
@@ -20,23 +49,27 @@ Content-Type: application/json
     client.global.set("author_id", response.body.id)
 %}
 
-### get author
+### get author (role author:read required)
 GET {{baseUrl}}/authors/{{author_id}}
 Accept: application/json
+Authorization: Bearer {{auth_token}}
 
-### get literature of author
+### get literature of author (role author:read required)
 GET {{baseUrl}}/authors/{{author_id}}/literature
 Accept: application/json
+Authorization: Bearer {{auth_token}}
 
-### update author
+### update author (role author:write required)
 PUT {{baseUrl}}/authors/{{author_id}}
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "firstName": "Jack",
   "lastName": "Donaghy"
 }
 
-### delete author
+### delete author (role author:write required)
 DELETE {{baseUrl}}/authors/{{author_id}}
+Authorization: Bearer {{auth_token}}

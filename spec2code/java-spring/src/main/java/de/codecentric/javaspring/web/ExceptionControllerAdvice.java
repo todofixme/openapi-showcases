@@ -1,6 +1,7 @@
 package de.codecentric.javaspring.web;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -10,6 +11,7 @@ import de.codecentric.javaspring.persistence.NotFoundException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,6 +46,13 @@ public class ExceptionControllerAdvice {
     public ResponseEntity<ProblemDTO> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException ex) {
         final Problem problem = new Problem(BAD_REQUEST, ex);
+        return ResponseEntity.status(problem.status()).body(new ProblemDTO().type(problem.type()).title(problem.title())
+                .status(problem.status()).detail(problem.detail()));
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ProblemDTO> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        final Problem problem = new Problem(FORBIDDEN, "The required permissions to access the resource are missing.");
         return ResponseEntity.status(problem.status()).body(new ProblemDTO().type(problem.type()).title(problem.title())
                 .status(problem.status()).detail(problem.detail()));
     }

@@ -3,3 +3,13 @@ spring:
   application.name: shelf-patrol-java-spring
   web.resources.static-locations: file:target/docs,classpath:/docs
   mvc.static-path-pattern: /docs/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/ShelfPatrolApp
+
+app:
+  jwt-converter:
+    resource-id: shelf-patrol-client
+    principal-attribute: preferred_username

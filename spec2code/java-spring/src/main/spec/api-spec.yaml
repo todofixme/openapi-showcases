@@ -2,9 +2,9 @@ openapi: 3.1.0
 info:
   title: Shelf Patrol API
   description: |-
-    This defines the API of the Shelf Patrol backend based on the OpenAPI 3.1 specification.
+    **Shelf Patrol helps to index and search your bookshelf.**
     
-    Shelf Patrol helps to index and search your bookshelf.
+    This defines the API of the Shelf Patrol backend based on the OpenAPI 3.1 specification.
   version: 1.0.0
   contact:
     name: Shelf Patrol Team
@@ -14,11 +14,20 @@ info:
     name: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
     identifier: CC-BY-NC-SA-4.0
 servers:
-  - url: http://localhost:7002
-    description: Local development server
-  - url: https://shelf-patrol.dofix.me
+  - url: http://localhost:7001/api/v1
+    description: Local development server (springdoc)
+  - url: http://localhost:7002/api/v1
+    description: Local development server (kotlin-spring)
+  - url: http://localhost:7003/api/v1
+    description: Local development server (java-spring)
+  - url: https://shelf-patrol.dofix.me/api/v1
     description: Production server
-security: [ ]
+security:
+  - oauth2:
+      - author:read
+      - author:write
+      - literature:read
+      - literature:write
 tags:
   - name: Authors
     description: Create, read, update and delete authors of literary works.
@@ -27,12 +36,16 @@ tags:
       Create, read, update and delete items of literary works.
       This includes books, articles, essays and other written works 
       or in general any body of written material that expresses ideas, emotions, stories or concepts through language.
-      Assign authors and tags to literature.
+      Assign authors to literature.
 paths:
   /authors:
     get:
       tags:
         - Authors
+      security:
+        - oauth2:
+            - author:read
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_author:read')\")"
       summary: Get list of authors
       description: Returns authors currently stored in the database.
       operationId: listAuthors
@@ -71,6 +84,10 @@ paths:
     post:
       tags:
         - Authors
+      security:
+        - oauth2:
+            - author:write
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_author:write')\")"
       summary: Create a new author
       description: |
         Creates an entry for an author in the database.
@@ -94,6 +111,10 @@ paths:
     get:
       tags:
         - Authors
+      security:
+        - oauth2:
+            - author:read
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_author:read')\")"
       summary: Get an author by ID
       description: Returns a single author from the database, identified by its unique ID.
       operationId: getAuthorById
@@ -120,6 +141,10 @@ paths:
     put:
       tags:
         - Authors
+      security:
+        - oauth2:
+            - author:write
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_author:write')\")"
       summary: Update an author
       description: >
         Updates an already existing author in the database, identified by its unique ID.
@@ -149,6 +174,10 @@ paths:
     delete:
       tags:
         - Authors
+      security:
+        - oauth2:
+            - author:write
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_author:write')\")"
       summary: Delete an author
       description: Deletes an author from the database, identified by its unique ID.
       operationId: deleteAuthor
@@ -170,6 +199,10 @@ paths:
     get:
       tags:
         - Authors
+      security:
+        - oauth2:
+            - author:read
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_author:get')\")"
       summary: Get list of the authors literary works
       description: Returns all literary works of that author currently stored in the database.
       operationId: listAuthorsLiterature
@@ -197,6 +230,10 @@ paths:
     get:
       tags:
         - Literature
+      security:
+        - oauth2:
+            - literature:read
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_literature:read')\")"
       summary: Get list of literary works
       description: Returns literary works currently stored in the database.
       operationId: listLiterature
@@ -227,6 +264,10 @@ paths:
     post:
       tags:
         - Literature
+      security:
+        - oauth2:
+            - literature:write
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_literature:write')\")"
       summary: Create a literary work
       description: |
         Creates an entry for a literary work in the database.
@@ -250,6 +291,10 @@ paths:
     get:
       tags:
         - Literature
+      security:
+        - oauth2:
+            - literature:read
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_literature:read')\")"
       summary: Get a literary work by ID
       description: Returns a single literary work from the database, identified by its unique ID.
       operationId: getLiteratureById
@@ -276,6 +321,10 @@ paths:
     put:
       tags:
         - Literature
+      security:
+        - oauth2:
+            - literature:write
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_literature:write')\")"
       summary: Update a literary work
       description: >
         Updates an already existing literary work in the database, identified by its unique ID.
@@ -305,6 +354,10 @@ paths:
     delete:
       tags:
         - Literature
+      security:
+        - oauth2:
+            - literature:write
+      x-operation-extra-annotation: "@org.springframework.security.access.prepost.PreAuthorize(\"hasRole('ROLE_literature:write')\")"
       summary: Delete a literary work
       description: Deletes a literary work from the database, identified by its unique ID.
       operationId: deleteLiterature
@@ -345,6 +398,17 @@ components:
         maximum: 50
         default: 10
         example: 20
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: http://localhost:8080/realms/ShelfPatrolApp/protocol/openid-connect/token
+          scopes:
+            author:read: Read the author/s
+            author:write: Create, update and delete authors
+            literature:read: Read all literary works
+            literature:create: Create, update and delete a new literary work
   schemas:
     CreateAuthor:
       type: object

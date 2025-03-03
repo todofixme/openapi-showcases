@@ -15,14 +15,18 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(API_BASE_PATH)
 @AllArgsConstructor
+@Slf4j
 public class AuthorsController implements AuthorsApi {
     private final AuthorService authorService;
     private final LiteratureService literatureService;
@@ -31,6 +35,7 @@ public class AuthorsController implements AuthorsApi {
     @Override
     public ResponseEntity<AuthorDTO> createAuthor(CreateAuthorDTO createAuthor) {
         final Author entity = authorService.save(mapper.map(createAuthor));
+        log.info("Creating author for user {}", getCurrentUserOrFail());
         return ResponseEntity //
                 .created(URI.create(API_BASE_PATH + "/" + entity.id())) //
                 .body(mapper.map(entity));
@@ -74,5 +79,13 @@ public class AuthorsController implements AuthorsApi {
         responseHeaders.add("X-Per-Page", String.valueOf(perPage));
         responseHeaders.add("X-Current-Page", String.valueOf(page));
         return ResponseEntity.ok().headers(responseHeaders).body(literature);
+    }
+
+    private String getCurrentUserOrFail() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new NotAuthenticatedException();
+        }
+        return authentication.getName();
     }
 }
