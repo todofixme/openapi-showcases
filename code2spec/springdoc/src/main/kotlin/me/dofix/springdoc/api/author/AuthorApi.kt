@@ -2,7 +2,6 @@ package me.dofix.springdoc.api.author
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import me.dofix.springdoc.api.error.Problem400BadRequestDTO
 import me.dofix.springdoc.api.error.Problem404NotFoundDTO
-import me.dofix.springdoc.persistence.Author
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -35,11 +33,6 @@ interface AuthorApi {
             ApiResponse(
                 description = "successful operation",
                 responseCode = "201",
-                content = [
-                    Content(
-                        schema = Schema(implementation = Author::class)
-                    ),
-                ]
             ),
             ApiResponse(
                 description = "invalid input",
@@ -98,7 +91,6 @@ interface AuthorApi {
         value = [ApiResponse(
             responseCode = "200",
             description = "successful operation",
-            content = [Content(array = ArraySchema(schema = Schema(implementation = AuthorDTO::class)))]
         )]
     )
     @GetMapping(
@@ -119,7 +111,6 @@ interface AuthorApi {
             ApiResponse(
                 responseCode = "200",
                 description = "successful operation",
-                content = [Content(schema = Schema(implementation = AuthorDTO::class))],
             ),
             ApiResponse(
                 responseCode = "400",
